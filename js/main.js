@@ -2,6 +2,11 @@ var Gnirt = Gnirt || {};
 
 Gnirt.Main = (function() {
   var scene, camera, renderer, orbitControls;
+  // audio variable
+  var context,
+        soundSource,
+        soundBuffer,
+        url = 'http://thingsinjars.com/lab/web-audio-tutorial/hello.mp3';
 
   function setup() {
     scene = new THREE.Scene();
@@ -45,23 +50,60 @@ Gnirt.Main = (function() {
     scene.add(helper);
   }
 
-  function addAudio() {
-    var listener = new THREE.AudioListener();
-    camera.add(listener);
-    var sphere = new THREE.SphereGeometry(20, 32, 16);
-    var material_sphere2 = new THREE.MeshLambertMaterial({
-      color: 0xff2200,
-      shading: THREE.FlatShading
-    });
-    var mesh2 = new THREE.Mesh(sphere, material_sphere2);
-    mesh2.position.set(250, 30, 0);
-    scene.add(mesh2);
 
-    var sound2 = new THREE.Audio(listener);
-    sound2.load('data/music.mp3');
-    sound2.setRefDistance(20);
-    sound2.autoplay = true;
-    mesh2.add(sound2);
+  function addAudio() {
+    /**
+     * Audio sphere with three js
+     **/
+    // var listener = new THREE.AudioListener();
+    // camera.add(listener);
+    // var sphere = new THREE.SphereGeometry(20, 32, 16);
+    // var material_sphere2 = new THREE.MeshLambertMaterial({
+    //   color: 0xff2200,
+    //   shading: THREE.FlatShading
+    // });
+    // var mesh2 = new THREE.Mesh(sphere, material_sphere2);
+    // mesh2.position.set(250, 30, 0);
+    // scene.add(mesh2);
+    //
+    // var sound2 = new THREE.Audio(listener);
+    // sound2.load('data/music.mp3');
+    // sound2.setRefDistance(20);
+    // sound2.autoplay = true;
+    // mesh2.add(sound2);
+    /**
+     * Audio in browser http://creativejs.com/resources/web-audio-api-getting-started/
+     **/
+    if (typeof AudioContext !== "undefined") {
+      context = new AudioContext();
+    } else if (typeof webkitAudioContext !== "undefined") {
+      context = new webkitAudioContext();
+    } else {
+      throw new Error('AudioContext not supported. :(');
+    }
+    var request = new XMLHttpRequest();
+    request.open("GET", url, true);
+    request.responseType = "arraybuffer";
+    // Our asynchronous callback
+    request.onload = function() {
+      var audioData = request.response;
+      createSoundSource(audioData);
+    };
+    request.send();
+  }
+
+  function createSoundSource(audioData) {
+    // create a sound source
+    soundSource = context.createBufferSource();
+    // The Audio Context handles creating source buffers from raw binary
+    context.decodeAudioData(audioData, function(soundBuffer){
+      // Add the buffered data to our object
+      soundSource.buffer = soundBuffer;
+      // Plug the cable from one thing to the other
+      soundSource.connect(context.destination);
+      // Finally
+      soundSource.start(context.currentTime);
+    });
   }
 
   function addLighting() {
