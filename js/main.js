@@ -1,12 +1,12 @@
 var Gnirt = Gnirt || {};
 
 Gnirt.Main = (function() {
-  var scene, camera, renderer, orbitControls;
+  var scene, camera, renderer, orbitControls, video, videoTexture;
   // audio variable
   var context,
-        soundSource,
-        soundBuffer,
-        url = 'http://thingsinjars.com/lab/web-audio-tutorial/hello.mp3';
+    soundSource,
+    soundBuffer,
+    url = 'http://thingsinjars.com/lab/web-audio-tutorial/hello.mp3';
 
   function setup() {
     scene = new THREE.Scene();
@@ -28,11 +28,13 @@ Gnirt.Main = (function() {
 
     addLighting();
 
-    addMesh();
+    //addMesh();
 
-    addGround();
+    //addGround();
 
-    addAudio();
+    //addAudio();
+
+    addVideo();
   }
 
   function onWindowResize() {
@@ -96,7 +98,7 @@ Gnirt.Main = (function() {
     // create a sound source
     soundSource = context.createBufferSource();
     // The Audio Context handles creating source buffers from raw binary
-    context.decodeAudioData(audioData, function(soundBuffer){
+    context.decodeAudioData(audioData, function(soundBuffer) {
       // Add the buffered data to our object
       soundSource.buffer = soundBuffer;
       // Plug the cable from one thing to the other
@@ -104,6 +106,43 @@ Gnirt.Main = (function() {
       // Finally
       soundSource.start(context.currentTime);
     });
+  }
+
+  function addVideo() {
+    video = document.createElement('video');
+    video.width = 320;
+    video.height = 240;
+    video.autoplay = true;
+    navigator.getUserMedia = navigator.getUserMedia ||
+      navigator.webkitGetUserMedia ||
+      navigator.mozGetUserMedia ||
+      navigator.msGetUserMedia;
+
+    if (navigator.getUserMedia) {
+      navigator.getUserMedia({
+        audio: false,
+        video: true
+      }, function(stream) {
+        video.src = window.URL.createObjectURL(stream);
+      }, function(error) {
+        console.log("Failed to get a stream due to", error);
+      });
+    } else {
+      video.src = "http://example.com/supercatvideo.webm";
+    }
+
+    videoTexture = new THREE.Texture(video);
+    materialVideoTexture = new THREE.MeshLambertMaterial({
+      map: videoTexture
+    });
+    var geometry = new THREE.BoxGeometry(200, 200, 200);
+
+    var mesh = new THREE.Mesh(geometry, materialVideoTexture);
+
+    // give it some random rotation
+    mesh.rotation.y = Gnirt.Utils.degToRad(Gnirt.Utils.randomRange(45, 135));
+
+    scene.add(mesh);
   }
 
   function addLighting() {
@@ -134,6 +173,9 @@ Gnirt.Main = (function() {
   function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+      videoTexture.needsUpdate = true;
+    }
   }
 
   return {
