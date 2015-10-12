@@ -3,6 +3,8 @@ if (Gnirt.WebGLDetect) {
   LazyLoad.js(
     [
       "https://cdnjs.cloudflare.com/ajax/libs/three.js/r72/three.min.js",
+      "./js/vendor/orbitControls.js",
+      "./js/utils.js",
       "./js/main.js"
     ],
     function() {

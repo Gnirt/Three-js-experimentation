@@ -1,4 +1,4 @@
-// http://stackoverflow.com/questions/11871077/proper-way-to-detect-webgl-support
+// source: http://stackoverflow.com/questions/11871077/proper-way-to-detect-webgl-support
 
 var Gnirt = Gnirt || {};
 
