@@ -59,7 +59,3 @@ Gnirt.Main = (function() {
     }
   };
 })();
-
-document.addEventListener('DOMContentLoaded', function() {
-  Gnirt.Main.init();
-});
