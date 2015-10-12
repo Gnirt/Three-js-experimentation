@@ -24,6 +24,10 @@ Gnirt.Main = (function() {
     addLighting();
 
     addMesh();
+
+    addGround();
+
+    addAudio();
   }
 
   function onWindowResize() {
@@ -31,6 +35,33 @@ Gnirt.Main = (function() {
     camera.updateProjectionMatrix();
 
     renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  function addGround() {
+    var helper = new THREE.GridHelper(500, 10);
+    helper.color1.setHex(0x444444);
+    helper.color2.setHex(0x444444);
+    helper.position.y = 0.1;
+    scene.add(helper);
+  }
+
+  function addAudio() {
+    var listener = new THREE.AudioListener();
+    camera.add(listener);
+    var sphere = new THREE.SphereGeometry(20, 32, 16);
+    var material_sphere2 = new THREE.MeshLambertMaterial({
+      color: 0xff2200,
+      shading: THREE.FlatShading
+    });
+    var mesh2 = new THREE.Mesh(sphere, material_sphere2);
+    mesh2.position.set(250, 30, 0);
+    scene.add(mesh2);
+
+    var sound2 = new THREE.Audio(listener);
+    sound2.load('data/music.mp3');
+    sound2.setRefDistance(20);
+    sound2.autoplay = true;
+    mesh2.add(sound2);
   }
 
   function addLighting() {
@@ -46,7 +77,7 @@ Gnirt.Main = (function() {
   function addMesh() {
     var geometry = new THREE.BoxGeometry(200, 200, 200);
     var material = new THREE.MeshPhongMaterial({
-      color: 0xff0000,
+      color: 0xffffe0,
       shading: THREE.FlatShading
     });
 
