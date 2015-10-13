@@ -35,11 +35,13 @@ Gnirt.Main = (function() {
 
     addVideo();
     var step;
-    for (step = 0; step < 150; step++) {
+    for (step = 0; step < 100; step++) {
       addMesh(step);
     }
 
-    //addGround();
+    addBackgroundSphere();
+
+    addGround();
 
     //addAudio();
 
@@ -53,10 +55,10 @@ Gnirt.Main = (function() {
   }
 
   function addGround() {
-    var helper = new THREE.GridHelper(500, 10);
+    var helper = new THREE.GridHelper(1000, 100);
     helper.color1.setHex(0x444444);
     helper.color2.setHex(0x444444);
-    helper.position.y = 0.1;
+    helper.position.y = -100;
     scene.add(helper);
   }
 
@@ -142,6 +144,7 @@ Gnirt.Main = (function() {
     materialVideoTexture = new THREE.MeshLambertMaterial({
       map: videoTexture
     });
+    materialVideoTexture.map.minFilter = THREE.LinearFilter;
   }
 
   function changeFilter(el) {
@@ -168,14 +171,27 @@ Gnirt.Main = (function() {
 
     var mesh = new THREE.Mesh(geometry, materialVideoTexture);
     cubeX = cubeX + 200;
-    if (step % 15 == 0) {
+    if (step % 10 === 0) {
       cubeY = cubeY + 200;
       cubeX = 0;
     }
-    mesh.position.set(cubeX - 1400, cubeY - 1400, 0);
+    mesh.position.set(cubeX - 1000, cubeY - 200, -500);
     // give it some random rotation
     // mesh.rotation.y = Gnirt.Utils.degToRad(Gnirt.Utils.randomRange(45, 135));
     scene.add(mesh);
+  }
+
+  function addBackgroundSphere() {
+    var sphereMat = new THREE.MeshBasicMaterial({ color: 0x5a4d3e, wireframe: true, transparent: true, opacity: 0.6 });
+
+    var sphere1Geo = new THREE.SphereGeometry(1200, 20, 10);
+    var sphere2Geo = new THREE.IcosahedronGeometry( 1400, 2 );
+
+    var sphere1 = new THREE.Mesh( sphere1Geo, sphereMat );
+    var sphere2 = new THREE.Mesh( sphere2Geo, sphereMat );
+
+    scene.add( sphere1 );
+    scene.add( sphere2 );
   }
 
   function animate() {
