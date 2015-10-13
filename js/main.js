@@ -1,7 +1,7 @@
 var Gnirt = Gnirt || {};
 
 Gnirt.Main = (function() {
-  var scene, camera, renderer, orbitControls, video, videoTexture;
+  var scene, camera, renderer, orbitControls, video, videoTexture, badTVPasses, badTVJamming;
   // audio variable
   var context,
     soundSource,
@@ -32,6 +32,7 @@ Gnirt.Main = (function() {
 
     addLighting();
 
+    addBadTv();
     addVideo();
     addMesh();
 
@@ -48,6 +49,19 @@ Gnirt.Main = (function() {
     camera.updateProjectionMatrix();
 
     renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  function addBadTv() {
+    badTVPasses = new THREEx.BadTVPasses();
+
+    var composer	= new THREE.EffectComposer(renderer);
+  	var renderPass	= new THREE.RenderPass( scene, camera );
+  	composer.addPass( renderPass );
+
+  	// add badTVPasses to composer
+  	badTVPasses.addPassesTo(composer);
+
+  	composer.passes[composer.passes.length -1 ].renderToScreen	= true;
   }
 
   function addGround() {
@@ -157,6 +171,7 @@ Gnirt.Main = (function() {
     source.connect(delay);
     source.connect(ctx.destination);
     delay.connect(ctx.destination);
+    badTVJamming	= new THREEx.BadTVJamming(badTVPasses, ctx);
   }
 
   /**
