@@ -11,13 +11,11 @@ Gnirt.Main = (function() {
   // var filters = ['grayscale', 'sepia', 'blur', 'brightness',
   //              'contrast', 'hue-rotate', 'hue-rotate2',
   //              'hue-rotate3', 'saturate', 'invert', '', 'drop-shadow'];
-  var cubeY = 0;
-  var cubeX = 0;
   function setup() {
     scene = new THREE.Scene();
 
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-    camera.position.z = 1000;
+    camera.position.z = 10;
 
     renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -27,17 +25,14 @@ Gnirt.Main = (function() {
 
     document.body.appendChild(renderer.domElement);
 
-    orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+    addOrbitControls();
 
     window.addEventListener('resize', onWindowResize, false);
 
     addLighting();
 
     addVideo();
-    var step;
-    for (step = 0; step < 100; step++) {
-      addMesh(step);
-    }
+    addMesh();
 
     addBackgroundSphere();
 
@@ -167,18 +162,50 @@ Gnirt.Main = (function() {
   }
 
   function addMesh(step) {
-    var geometry = new THREE.BoxGeometry(200, 200, 200);
+    var cubeY = 0;
+    var cubeX = 0;
+    var cubeZ = 0;
+    var step;
+    for (step = 0; step < 200; step++) {
+      var geometry = new THREE.BoxGeometry(200, 200, 200);
 
-    var mesh = new THREE.Mesh(geometry, materialVideoTexture);
-    cubeX = cubeX + 200;
-    if (step % 10 === 0) {
-      cubeY = cubeY + 200;
-      cubeX = 0;
+      var mesh = new THREE.Mesh(geometry, materialVideoTexture);
+      if (step < 50) {
+        cubeX = cubeX + 200;
+        if (step % 10 === 0) {
+          cubeY = cubeY + 200;
+          cubeX = 0;
+        }
+      } else if (step < 100) {
+        cubeZ = cubeZ + 200;
+        if (step === 50)
+          cubeY = 0; cubeX = 0;
+        if (step % 10 === 0) {
+          cubeY = cubeY + 200;
+          cubeZ = 0;
+        }
+      } else if (step < 150) {
+        cubeX = cubeX + 200;
+        if (step === 100)
+          cubeY = 0;
+        if (step % 10 === 0) {
+          cubeY = cubeY + 200;
+          cubeX = 0;
+        }
+      } else {
+        cubeZ = cubeZ + 200;
+        if (step === 150)
+          cubeY = 0;
+        if (step % 10 === 0) {
+          cubeY = cubeY + 200;
+          cubeZ = 0;
+        }
+      }
+      mesh.position.set(cubeX - 900, cubeY - 200, cubeZ - 800);
+      // give it some random rotation
+      // mesh.rotation.y = Gnirt.Utils.degToRad(Gnirt.Utils.randomRange(45, 135));
+      scene.add(mesh);
     }
-    mesh.position.set(cubeX - 1000, cubeY - 200, -500);
-    // give it some random rotation
-    // mesh.rotation.y = Gnirt.Utils.degToRad(Gnirt.Utils.randomRange(45, 135));
-    scene.add(mesh);
   }
 
   function addBackgroundSphere() {
@@ -192,6 +219,15 @@ Gnirt.Main = (function() {
 
     scene.add( sphere1 );
     scene.add( sphere2 );
+  }
+
+  function addOrbitControls() {
+    orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+    // orbitControls.minPolarAngle = Gnirt.Utils.degToRad(90);
+    // orbitControls.maxPolarAngle = Gnirt.Utils.degToRad(360);
+    // orbitControls.enablePan = false;
+    // orbitControls.minDistance = 10;
+    // orbitControls.maxDistance = 100;
   }
 
   function animate() {
