@@ -216,8 +216,8 @@ Gnirt.Main = (function() {
   function addBackgroundSphere() {
     var sphereMat = new THREE.MeshBasicMaterial({ color: 0x5a4d3e, wireframe: true, transparent: true, opacity: 0.6 });
 
-    var sphere1Geo = new THREE.SphereGeometry(1200, 20, 10);
-    var sphere2Geo = new THREE.IcosahedronGeometry( 1400, 2 );
+    var sphere1Geo = new THREE.SphereGeometry(1800, 20, 10);
+    var sphere2Geo = new THREE.IcosahedronGeometry( 2100, 2 );
 
     var sphere1 = new THREE.Mesh( sphere1Geo, sphereMat );
     var sphere2 = new THREE.Mesh( sphere2Geo, sphereMat );

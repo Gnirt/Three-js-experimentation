@@ -6,8 +6,22 @@
   <title>Three.js experimentation</title>
 </head>
 <body>
+  <div id="info-icon">i</div>
+  <div id="info" class="hidden">
+    <h1><a href="http://threejs.org" target="_blank">three.js</a> Neo like</h1>
+    Created by <a href="http://www.philippetring.fr">Philippe Tring</a><br>
+    Inspired by <a href="https://www.youtube.com/watch?v=ZKpFFD7aX3c" target="_blank">Matrix</a><br>
+    Left mouse orbit, middle mouse zoom<br>
+  </div>
+
   <script type="text/javascript" src="js/vendor/lazyload.js"></script>
   <script type="text/javascript" src="js/detect.js"></script>
   <script type="text/javascript" src="js/init.js"></script>
+  <script type="text/javascript">
+    document.getElementById('info-icon').onclick = function(){
+        document.getElementById('info').classList.toggle('hidden');
+        return false;
+    };
+  </script>>
 </body>
 </html>
