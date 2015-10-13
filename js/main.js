@@ -3,14 +3,22 @@ var Gnirt = Gnirt || {};
 Gnirt.Main = (function() {
   var scene, camera, renderer, orbitControls, video, videoTexture;
   // audio variable
-  var context,
-    soundSource,
-    soundBuffer,
-    url = 'http://thingsinjars.com/lab/web-audio-tutorial/hello.mp3';
+  // var context,
+  //   soundSource,
+  //   soundBuffer,
+  //   url = 'http://thingsinjars.com/lab/web-audio-tutorial/hello.mp3';
   // var idx = 0;
   // var filters = ['grayscale', 'sepia', 'blur', 'brightness',
   //              'contrast', 'hue-rotate', 'hue-rotate2',
   //              'hue-rotate3', 'saturate', 'invert', '', 'drop-shadow'];
+  // audio variable for analyse
+  var freqByteData; //bars - bar data is from 0 - 256 in 512 bins. no sound is 0;
+  var timeByteData; //waveform - waveform data is from 0-256 for 512 bins. no sound is 128.
+  var binCount; //512
+  var levelsData = [];
+  var levelsCount = 16; //should be factor of 512
+  var levelBins;
+
   function setup() {
     scene = new THREE.Scene();
 
@@ -138,25 +146,41 @@ Gnirt.Main = (function() {
      * http://blog.chrislowis.co.uk/2014/07/23/dub-delay-web-audio-api.html
      **/
 
-    var ctx = new AudioContext();
-    var source = ctx.createMediaStreamSource(stream);
+    // var ctx = new AudioContext();
+    // var source = ctx.createMediaStreamSource(stream);
+    // var delay = ctx.createDelay();
+    // delay.delayTime.value = 0.5;
+    //
+    // var feedback = ctx.createGain();
+    // feedback.gain.value = 0.8;
+    //
+    // var filter = ctx.createBiquadFilter();
+    // filter.frequency.value = 1000;
+    //
+    // delay.connect(feedback);
+    // feedback.connect(filter);
+    // filter.connect(delay);
+    //
+    // source.connect(delay);
+    // source.connect(ctx.destination);
+    // delay.connect(ctx.destination);
 
-    var delay = ctx.createDelay();
-    delay.delayTime.value = 0.5;
+    /**
+     * audio analyse of the mic
+     **/
+    audioContext = new AudioContext();
+    source = audioContext.createBufferSource();
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 1024;
+    analyser.smoothingTimeConstant = 0.3;
+    binCount = analyser.frequencyBinCount; // = 512
 
-    var feedback = ctx.createGain();
-    feedback.gain.value = 0.8;
+    microphone = audioContext.createMediaStreamSource(stream);
+    microphone.connect(analyser);
 
-    var filter = ctx.createBiquadFilter();
-    filter.frequency.value = 1000;
-
-    delay.connect(feedback);
-    feedback.connect(filter);
-    filter.connect(delay);
-
-    source.connect(delay);
-    source.connect(ctx.destination);
-    delay.connect(ctx.destination);
+    freqByteData = new Uint8Array(binCount);
+    timeByteData = new Uint8Array(binCount);
+    levelBins = Math.floor(binCount / levelsCount); //number of bins in each level
   }
 
   /**
@@ -295,12 +319,42 @@ Gnirt.Main = (function() {
     orbitControls.maxDistance = 100;
   }
 
+  function soundAnalyse() {
+    if (typeof analyser !== 'undefined') {
+      analyser.getByteFrequencyData(freqByteData);
+      analyser.getByteTimeDomainData(timeByteData);
+      var sum, j, i;
+      for (i = 0; i < levelsCount; i++) {
+        sum = 0;
+        for (j = 0; j < levelBins; j++) {
+          sum += freqByteData[(i * levelBins) + j];
+        }
+        levelsData[i] = sum / levelBins / 256; //freqData maxs at 256
+
+        //adjust for the fact that lower levels are percieved more quietly
+        //make lower levels smaller
+        //levelsData[i] *=  1 + (i/levelsCount)/2;
+      }
+      //GET AVG LEVEL
+      sum = 0;
+      for (j = 0; j < levelsCount; j++) {
+        sum += levelsData[j];
+      }
+
+      level = sum / levelsCount;
+      if (level > 0.2) {
+        console.log('du bruit');
+      }
+    }
+  }
+
   function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
     if (video.readyState === video.HAVE_ENOUGH_DATA) {
       videoTexture.needsUpdate = true;
     }
+    soundAnalyse();
   }
 
   return {
