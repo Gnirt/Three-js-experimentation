@@ -151,17 +151,22 @@ Gnirt.Main = (function() {
   }
 
   function addLighting() {
-    //var light = new THREE.DirectionalLight(0xffffff, 1.5);
-    var light = new THREE.DirectionalLight(0xffffff, 1.5);
-    light.position.set(400, 400, 400);
-    light.target.position.set(0, 0, 0);
-
-    scene.add(light);
+    // var light = new THREE.DirectionalLight(0xffffff, 1.5);
+    // light.position.set(400, 400, 400);
+    // light.target.position.set(0, 0, 0);
+    // scene.add(light);
 
     scene.add(new THREE.AmbientLight(0x222222));
+    var keyLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
+    keyLight.position.set( 1, 1, 1 );
+    scene.add( keyLight );
+
+    var fillLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
+    fillLight.position.set( -1, 0, -1 );
+    scene.add( fillLight );
   }
 
-  function addMesh(step) {
+  function addMesh() {
     var cubeY = 0;
     var cubeX = 0;
     var cubeZ = 0;
