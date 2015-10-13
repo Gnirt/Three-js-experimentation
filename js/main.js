@@ -7,11 +7,12 @@ Gnirt.Main = (function() {
     soundSource,
     soundBuffer,
     url = 'http://thingsinjars.com/lab/web-audio-tutorial/hello.mp3';
-  var idx = 0;
-  var filters = ['grayscale', 'sepia', 'blur', 'brightness',
-               'contrast', 'hue-rotate', 'hue-rotate2',
-               'hue-rotate3', 'saturate', 'invert', '', 'drop-shadow'];
-
+  // var idx = 0;
+  // var filters = ['grayscale', 'sepia', 'blur', 'brightness',
+  //              'contrast', 'hue-rotate', 'hue-rotate2',
+  //              'hue-rotate3', 'saturate', 'invert', '', 'drop-shadow'];
+  var cubeY = 0;
+  var cubeX = 0;
   function setup() {
     scene = new THREE.Scene();
 
@@ -32,13 +33,16 @@ Gnirt.Main = (function() {
 
     addLighting();
 
-    //addMesh();
+    addVideo();
+    var step;
+    for (step = 0; step < 150; step++) {
+      addMesh(step);
+    }
 
     //addGround();
 
     //addAudio();
 
-    addVideo();
   }
 
   function onWindowResize() {
@@ -55,7 +59,6 @@ Gnirt.Main = (function() {
     helper.position.y = 0.1;
     scene.add(helper);
   }
-
 
   function addAudio() {
     /**
@@ -139,14 +142,6 @@ Gnirt.Main = (function() {
     materialVideoTexture = new THREE.MeshLambertMaterial({
       map: videoTexture
     });
-    var geometry = new THREE.BoxGeometry(200, 200, 200);
-
-    var mesh = new THREE.Mesh(geometry, materialVideoTexture);
-
-    // give it some random rotation
-    mesh.rotation.y = Gnirt.Utils.degToRad(Gnirt.Utils.randomRange(45, 135));
-
-    scene.add(mesh);
   }
 
   function changeFilter(el) {
@@ -158,7 +153,8 @@ Gnirt.Main = (function() {
   }
 
   function addLighting() {
-    var light = new THREE.DirectionalLight(0xffffff, 0.6);
+    //var light = new THREE.DirectionalLight(0xffffff, 1.5);
+    var light = new THREE.DirectionalLight(0xffffff, 1.5);
     light.position.set(400, 400, 400);
     light.target.position.set(0, 0, 0);
 
@@ -167,18 +163,18 @@ Gnirt.Main = (function() {
     scene.add(new THREE.AmbientLight(0x222222));
   }
 
-  function addMesh() {
+  function addMesh(step) {
     var geometry = new THREE.BoxGeometry(200, 200, 200);
-    var material = new THREE.MeshPhongMaterial({
-      color: 0xffffe0,
-      shading: THREE.FlatShading
-    });
 
-    var mesh = new THREE.Mesh(geometry, material);
-
+    var mesh = new THREE.Mesh(geometry, materialVideoTexture);
+    cubeX = cubeX + 200;
+    if (step % 15 == 0) {
+      cubeY = cubeY + 200;
+      cubeX = 0;
+    }
+    mesh.position.set(cubeX - 1400, cubeY - 1400, 0);
     // give it some random rotation
-    mesh.rotation.y = Gnirt.Utils.degToRad(Gnirt.Utils.randomRange(45, 135));
-
+    // mesh.rotation.y = Gnirt.Utils.degToRad(Gnirt.Utils.randomRange(45, 135));
     scene.add(mesh);
   }
 
