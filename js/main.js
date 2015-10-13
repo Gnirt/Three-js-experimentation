@@ -39,7 +39,7 @@ Gnirt.Main = (function() {
 
     addGround();
 
-    addAudio();
+    //addAudio();
 
   }
 
@@ -101,50 +101,6 @@ Gnirt.Main = (function() {
     //   createSoundSource(audioData);
     // };
     // request.send();
-    window.AudioContext = window.AudioContext || window.webkitAudioContext;
-
-    navigator.getUserMedia({
-      audio: true
-    }, function(stream) {
-      /**
-       * http://www.html5rocks.com/en/tutorials/getusermedia/intro/
-       **/
-      // var context = new AudioContext();
-      // var microphone = context.createMediaStreamSource(stream);
-      // var filter = context.createBiquadFilter();
-      //
-      // // microphone -> filter -> destination.
-      // microphone.connect(filter);
-      // filter.connect(context.destination);
-      // filter.type = 'lowpass'; // Low-pass filter. See BiquadFilterNode docs
-      // filter.frequency.value = 440; // Set cutoff to 440 HZ
-
-      /**
-       * http://blog.chrislowis.co.uk/2014/07/23/dub-delay-web-audio-api.html
-       **/
-
-      var ctx = new AudioContext();
-      var source = ctx.createMediaStreamSource(stream);
-
-      var delay = ctx.createDelay();
-      delay.delayTime.value = 0.5;
-
-      var feedback = ctx.createGain();
-      feedback.gain.value = 0.8;
-
-      var filter = ctx.createBiquadFilter();
-      filter.frequency.value = 1000;
-
-      delay.connect(feedback);
-      feedback.connect(filter);
-      filter.connect(delay);
-
-      source.connect(delay);
-      source.connect(ctx.destination);
-      delay.connect(ctx.destination);
-    }, function(error) {
-      console.log("Failed to get a stream due to", error);
-    });
   }
 
   function createSoundSource(audioData) {
@@ -159,6 +115,48 @@ Gnirt.Main = (function() {
       // Finally
       soundSource.start(context.currentTime);
     });
+  }
+
+  function addEchoSoundFromMic(stream) {
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+    /**
+     * http://www.html5rocks.com/en/tutorials/getusermedia/intro/
+     **/
+
+    // var context = new AudioContext();
+    // var microphone = context.createMediaStreamSource(stream);
+    // var filter = context.createBiquadFilter();
+    //
+    // // microphone -> filter -> destination.
+    // microphone.connect(filter);
+    // filter.connect(context.destination);
+    // filter.type = 'lowpass'; // Low-pass filter. See BiquadFilterNode docs
+    // filter.frequency.value = 440; // Set cutoff to 440 HZ
+
+    /**
+     * http://blog.chrislowis.co.uk/2014/07/23/dub-delay-web-audio-api.html
+     **/
+
+    var ctx = new AudioContext();
+    var source = ctx.createMediaStreamSource(stream);
+
+    var delay = ctx.createDelay();
+    delay.delayTime.value = 0.5;
+
+    var feedback = ctx.createGain();
+    feedback.gain.value = 0.8;
+
+    var filter = ctx.createBiquadFilter();
+    filter.frequency.value = 1000;
+
+    delay.connect(feedback);
+    feedback.connect(filter);
+    filter.connect(delay);
+
+    source.connect(delay);
+    source.connect(ctx.destination);
+    delay.connect(ctx.destination);
   }
 
   /**
@@ -176,10 +174,11 @@ Gnirt.Main = (function() {
 
     if (navigator.getUserMedia) {
       navigator.getUserMedia({
-        audio: false,
+        audio: true,
         video: true
       }, function(stream) {
         video.src = window.URL.createObjectURL(stream);
+        addEchoSoundFromMic(stream);
       }, function(error) {
         console.log("Failed to get a stream due to", error);
       });
