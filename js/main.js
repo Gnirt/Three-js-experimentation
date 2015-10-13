@@ -15,7 +15,8 @@ Gnirt.Main = (function() {
     scene = new THREE.Scene();
 
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-    camera.position.z = 10;
+    camera.position.z = -1000;
+    camera.position.y = 20;
 
     renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -38,7 +39,7 @@ Gnirt.Main = (function() {
 
     addGround();
 
-    //addAudio();
+    addAudio();
 
   }
 
@@ -58,9 +59,11 @@ Gnirt.Main = (function() {
   }
 
   function addAudio() {
+
     /**
      * Audio sphere with three js
      **/
+
     // var listener = new THREE.AudioListener();
     // camera.add(listener);
     // var sphere = new THREE.SphereGeometry(20, 32, 16);
@@ -77,25 +80,71 @@ Gnirt.Main = (function() {
     // sound2.setRefDistance(20);
     // sound2.autoplay = true;
     // mesh2.add(sound2);
+
     /**
      * Audio in browser http://creativejs.com/resources/web-audio-api-getting-started/
      **/
-    if (typeof AudioContext !== "undefined") {
-      context = new AudioContext();
-    } else if (typeof webkitAudioContext !== "undefined") {
-      context = new webkitAudioContext();
-    } else {
-      throw new Error('AudioContext not supported. :(');
-    }
-    var request = new XMLHttpRequest();
-    request.open("GET", url, true);
-    request.responseType = "arraybuffer";
-    // Our asynchronous callback
-    request.onload = function() {
-      var audioData = request.response;
-      createSoundSource(audioData);
-    };
-    request.send();
+
+    // if (typeof AudioContext !== "undefined") {
+    //   context = new AudioContext();
+    // } else if (typeof webkitAudioContext !== "undefined") {
+    //   context = new webkitAudioContext();
+    // } else {
+    //   throw new Error('AudioContext not supported. :(');
+    // }
+    // var request = new XMLHttpRequest();
+    // request.open("GET", url, true);
+    // request.responseType = "arraybuffer";
+    // // Our asynchronous callback
+    // request.onload = function() {
+    //   var audioData = request.response;
+    //   createSoundSource(audioData);
+    // };
+    // request.send();
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+    navigator.getUserMedia({
+      audio: true
+    }, function(stream) {
+      /**
+       * http://www.html5rocks.com/en/tutorials/getusermedia/intro/
+       **/
+      // var context = new AudioContext();
+      // var microphone = context.createMediaStreamSource(stream);
+      // var filter = context.createBiquadFilter();
+      //
+      // // microphone -> filter -> destination.
+      // microphone.connect(filter);
+      // filter.connect(context.destination);
+      // filter.type = 'lowpass'; // Low-pass filter. See BiquadFilterNode docs
+      // filter.frequency.value = 440; // Set cutoff to 440 HZ
+
+      /**
+       * http://blog.chrislowis.co.uk/2014/07/23/dub-delay-web-audio-api.html
+       **/
+
+      var ctx = new AudioContext();
+      var source = ctx.createMediaStreamSource(stream);
+
+      var delay = ctx.createDelay();
+      delay.delayTime.value = 0.5;
+
+      var feedback = ctx.createGain();
+      feedback.gain.value = 0.8;
+
+      var filter = ctx.createBiquadFilter();
+      filter.frequency.value = 1000;
+
+      delay.connect(feedback);
+      feedback.connect(filter);
+      filter.connect(delay);
+
+      source.connect(delay);
+      source.connect(ctx.destination);
+      delay.connect(ctx.destination);
+    }, function(error) {
+      console.log("Failed to get a stream due to", error);
+    });
   }
 
   function createSoundSource(audioData) {
@@ -112,6 +161,9 @@ Gnirt.Main = (function() {
     });
   }
 
+  /**
+   * inspired by http://learningthreejs.com/blog/2012/02/07/live-video-in-webgl/
+   **/
   function addVideo() {
     video = document.createElement('video');
     video.width = 320;
@@ -157,13 +209,13 @@ Gnirt.Main = (function() {
     // scene.add(light);
 
     scene.add(new THREE.AmbientLight(0x222222));
-    var keyLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
-    keyLight.position.set( 1, 1, 1 );
-    scene.add( keyLight );
+    var keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    keyLight.position.set(1, 1, 1);
+    scene.add(keyLight);
 
-    var fillLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
-    fillLight.position.set( -1, 0, -1 );
-    scene.add( fillLight );
+    var fillLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    fillLight.position.set(-1, 0, -1);
+    scene.add(fillLight);
   }
 
   function addMesh() {
@@ -183,24 +235,28 @@ Gnirt.Main = (function() {
         }
       } else if (step < 100) {
         cubeZ = cubeZ + 200;
-        if (step === 50)
-          cubeY = 0; cubeX = 0;
+        if (step === 50) {
+          cubeY = 0;
+          cubeX = 0;
+        }
         if (step % 10 === 0) {
           cubeY = cubeY + 200;
           cubeZ = 0;
         }
       } else if (step < 150) {
         cubeX = cubeX + 200;
-        if (step === 100)
+        if (step === 100) {
           cubeY = 0;
+        }
         if (step % 10 === 0) {
           cubeY = cubeY + 200;
           cubeX = 0;
         }
       } else {
         cubeZ = cubeZ + 200;
-        if (step === 150)
+        if (step === 150) {
           cubeY = 0;
+        }
         if (step % 10 === 0) {
           cubeY = cubeY + 200;
           cubeZ = 0;
@@ -208,31 +264,36 @@ Gnirt.Main = (function() {
       }
       mesh.position.set(cubeX - 900, cubeY - 200, cubeZ - 800);
       // give it some random rotation
-      // mesh.rotation.y = Gnirt.Utils.degToRad(Gnirt.Utils.randomRange(45, 135));
+      mesh.rotation.y = Gnirt.Utils.degToRad(Gnirt.Utils.randomRange(45, 135));
       scene.add(mesh);
     }
   }
 
   function addBackgroundSphere() {
-    var sphereMat = new THREE.MeshBasicMaterial({ color: 0x5a4d3e, wireframe: true, transparent: true, opacity: 0.6 });
+    var sphereMat = new THREE.MeshBasicMaterial({
+      color: 0x5a4d3e,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.6
+    });
 
     var sphere1Geo = new THREE.SphereGeometry(1800, 20, 10);
-    var sphere2Geo = new THREE.IcosahedronGeometry( 2100, 2 );
+    var sphere2Geo = new THREE.IcosahedronGeometry(2100, 2);
 
-    var sphere1 = new THREE.Mesh( sphere1Geo, sphereMat );
-    var sphere2 = new THREE.Mesh( sphere2Geo, sphereMat );
+    var sphere1 = new THREE.Mesh(sphere1Geo, sphereMat);
+    var sphere2 = new THREE.Mesh(sphere2Geo, sphereMat);
 
-    scene.add( sphere1 );
-    scene.add( sphere2 );
+    scene.add(sphere1);
+    scene.add(sphere2);
   }
 
   function addOrbitControls() {
     orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
-    // orbitControls.minPolarAngle = Gnirt.Utils.degToRad(90);
-    // orbitControls.maxPolarAngle = Gnirt.Utils.degToRad(360);
-    // orbitControls.enablePan = false;
-    // orbitControls.minDistance = 10;
-    // orbitControls.maxDistance = 100;
+    orbitControls.minPolarAngle = Gnirt.Utils.degToRad(90);
+    orbitControls.maxPolarAngle = Gnirt.Utils.degToRad(360);
+    orbitControls.enablePan = false;
+    orbitControls.minDistance = 10;
+    orbitControls.maxDistance = 100;
   }
 
   function animate() {
