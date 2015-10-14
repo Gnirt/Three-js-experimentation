@@ -1,7 +1,7 @@
 var Gnirt = Gnirt || {};
 
 Gnirt.Main = (function() {
-  var scene, camera, renderer, orbitControls, video, videoTexture;
+  var scene, camera, renderer, orbitControls, video, videoTexture, cubes;
   // audio variable
   // var context,
   //   soundSource,
@@ -12,6 +12,7 @@ Gnirt.Main = (function() {
   //              'contrast', 'hue-rotate', 'hue-rotate2',
   //              'hue-rotate3', 'saturate', 'invert', '', 'drop-shadow'];
   // audio variable for analyse
+  var micEnable = true;
   var freqByteData; //bars - bar data is from 0 - 256 in 512 bins. no sound is 0;
   var timeByteData; //waveform - waveform data is from 0-256 for 512 bins. no sound is 128.
   var binCount; //512
@@ -33,7 +34,7 @@ Gnirt.Main = (function() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     document.body.appendChild(renderer.domElement);
-
+    cubes = new THREE.Object3D();
     addOrbitControls();
 
     window.addEventListener('resize', onWindowResize, false);
@@ -198,16 +199,19 @@ Gnirt.Main = (function() {
 
     if (navigator.getUserMedia) {
       navigator.getUserMedia({
-        audio: true,
+        audio: micEnable,
         video: true
       }, function(stream) {
         video.src = window.URL.createObjectURL(stream);
-        addEchoSoundFromMic(stream);
+        // video.src = "data/video.mp4";
+        if (micEnable) {
+          addEchoSoundFromMic(stream);
+        }
       }, function(error) {
         console.log("Failed to get a stream due to", error);
       });
     } else {
-      video.src = "http://example.com/supercatvideo.webm";
+      video.src = "data/video.mp4";
     }
 
     videoTexture = new THREE.Texture(video);
@@ -287,9 +291,10 @@ Gnirt.Main = (function() {
       }
       mesh.position.set(cubeX - 900, cubeY - 200, cubeZ - 800);
       // give it some random rotation
-      mesh.rotation.y = Gnirt.Utils.degToRad(Gnirt.Utils.randomRange(45, 135));
-      scene.add(mesh);
+      // mesh.rotation.y = Gnirt.Utils.degToRad(Gnirt.Utils.randomRange(45, 135));
+      cubes.add(mesh);
     }
+    scene.add(cubes);
   }
 
   function addBackgroundSphere() {
@@ -344,6 +349,7 @@ Gnirt.Main = (function() {
       level = sum / levelsCount;
       if (level > 0.2) {
         console.log('du bruit');
+        cubes.rotateOnAxis(new THREE.Vector3( 0, 1, 0 ), 0.1);
       }
     }
   }
