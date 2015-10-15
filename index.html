@@ -1,27 +1,39 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <link rel="stylesheet" type="text/css" href="css/reset.css">
-  <link rel="stylesheet" type="text/css" href="css/feuille-de-style.css">
-  <title>Three.js experimentation</title>
-</head>
-<body>
-  <div id="info-icon">i</div>
-  <div id="info" class="hidden">
-    <h1><a href="http://threejs.org" target="_blank">three.js</a> Neo like</h1>
-    Created by <a href="http://www.philippetring.fr">Philippe Tring</a><br>
-    Inspired by <a href="https://www.youtube.com/watch?v=ZKpFFD7aX3c" target="_blank">Matrix</a><br>
-    Left mouse orbit, middle mouse zoom<br>
-  </div>
 
-  <script type="text/javascript" src="js/vendor/lazyload.js"></script>
-  <script type="text/javascript" src="js/detect.js"></script>
-  <script type="text/javascript" src="js/init.js"></script>
-  <script type="text/javascript">
-    document.getElementById('info-icon').onclick = function(){
-        document.getElementById('info').classList.toggle('hidden');
-        return false;
-    };
-  </script>
-</body>
+  <head>
+    <link rel="stylesheet" type="text/css" href="css/reset.css">
+    <link rel="stylesheet" type="text/css" href="css/feuille-de-style.css">
+    <title>Three.js experimentation</title>
+  </head>
+
+  <body>
+    <video autoplay id="bgvid">
+      <!-- <source src="data/video.mp4" type="video/mp4"> -->
+      <source src="data/video2.mp4" type="video/mp4">
+    </video>
+    <div id='polina'>
+      <button id='next'>Introduce me to the Oracle</button>
+      <button id='pause'>Pause</button>
+    </div>
+
+
+    <div id="info-icon">i</div>
+    <div id="info" class="hidden">
+      <h1><a href="http://threejs.org" target="_blank">three.js</a> Neo like</h1>
+      Created by <a href="http://www.philippetring.fr">Philippe Tring</a>
+      <br> Inspired by <a href="https://www.youtube.com/watch?v=ZKpFFD7aX3c" target="_blank">Matrix</a>
+      <br> Left mouse orbit, middle mouse zoom
+      <br>
+    </div>
+
+    <script type="text/javascript" src="js/vendor/lazyload.js"></script>
+    <script type="text/javascript" src="js/detect.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r72/three.min.js"></script>
+    <script type="text/javascript" src="js/vendor/orbitControls.js"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/init.js"></script>
+  </body>
+
 </html>

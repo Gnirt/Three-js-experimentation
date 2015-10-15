@@ -349,7 +349,7 @@ Gnirt.Main = (function() {
       level = sum / levelsCount;
       if (level > 0.2) {
         console.log('du bruit');
-        cubes.rotateOnAxis(new THREE.Vector3( 0, 1, 0 ), 0.1);
+        cubes.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.1);
       }
     }
   }
@@ -363,10 +363,46 @@ Gnirt.Main = (function() {
     soundAnalyse();
   }
 
-  return {
-    init: function() {
+
+  function intro() {
+    var vid = document.getElementById("bgvid");
+    var pauseButton = document.getElementById("pause");
+    var nextButton = document.getElementById("next");
+    var polina = document.getElementById("polina");
+
+    function vidFade() {
+      vid.classList.add("stopfade");
+    }
+
+    pauseButton.addEventListener('ended', function() {
+      // only functional if "loop" is removed
+      vid.pause();
+      // to capture IE10
+      vidFade();
+    });
+
+    pauseButton.addEventListener("click", function() {
+      vid.classList.toggle("stopfade");
+      if (vid.paused) {
+        vid.play();
+        pauseButton.innerHTML = "Pause";
+      } else {
+        vid.pause();
+        pauseButton.innerHTML = "Paused";
+      }
+    });
+
+    nextButton.addEventListener("click", function() {
+      vid.parentNode.removeChild(vid);
+      polina.parentNode.removeChild(polina);
       setup();
       animate();
+    });
+  }
+
+  return {
+    init: function() {
+      intro();
     }
   };
 })();
