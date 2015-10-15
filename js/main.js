@@ -291,7 +291,7 @@ Gnirt.Main = (function() {
       }
       mesh.position.set(cubeX - 900, cubeY - 200, cubeZ - 800);
       // give it some random rotation
-      // mesh.rotation.y = Gnirt.Utils.degToRad(Gnirt.Utils.randomRange(45, 135));
+      mesh.rotation.y = Gnirt.Utils.degToRad(Gnirt.Utils.randomRange(45, 135));
       cubes.add(mesh);
     }
     scene.add(cubes);
@@ -375,8 +375,19 @@ Gnirt.Main = (function() {
       vid.classList.add("stopfade");
     }
 
+    function startExperiment() {
+      vid.parentNode.removeChild(vid);
+      polina.parentNode.removeChild(polina);
+      skip.parentNode.removeChild(skip);
+      pauseButton.parentNode.removeChild(pauseButton);
+      setup();
+      animate();
+    }
+
     vid.addEventListener('ended', function() {
       polina.classList.remove('hidden');
+      skip.classList.add('hidden');
+      pauseButton.classList.add('hidden');
     });
 
     pauseButton.addEventListener("click", function() {
@@ -391,21 +402,11 @@ Gnirt.Main = (function() {
     });
 
     nextButton.addEventListener("click", function() {
-      vid.parentNode.removeChild(vid);
-      polina.parentNode.removeChild(polina);
-      skip.parentNode.removeChild(skip);
-      pauseButton.parentNode.removeChild(pauseButton);
-      setup();
-      animate();
+      startExperiment();
     });
 
     skipButton.addEventListener("click", function() {
-      vid.parentNode.removeChild(vid);
-      polina.parentNode.removeChild(polina);
-      skip.parentNode.removeChild(skip);
-      pauseButton.parentNode.removeChild(pauseButton);
-      setup();
-      animate();
+      startExperiment();
     });
   }
 
