@@ -347,11 +347,13 @@ Gnirt.Main = (function() {
       }
 
       level = sum / levelsCount;
-      if (level > 0.2) {
-        console.log('du bruit');
-        cubes.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.1);
-      }
+      console.log('du bruit');
+      cubes.children.forEach(animMesh);
     }
+  }
+
+  function animMesh(mesh, index, array) {
+    mesh.rotateOnAxis(new THREE.Vector3(0, 1, 0), level);
   }
 
   function animate() {
