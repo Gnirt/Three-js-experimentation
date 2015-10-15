@@ -367,6 +367,7 @@ Gnirt.Main = (function() {
   function intro() {
     var vid = document.getElementById("bgvid");
     var pauseButton = document.getElementById("pause");
+    var skipButton = document.getElementById("skip");
     var nextButton = document.getElementById("next");
     var polina = document.getElementById("polina");
 
@@ -374,27 +375,35 @@ Gnirt.Main = (function() {
       vid.classList.add("stopfade");
     }
 
-    pauseButton.addEventListener('ended', function() {
-      // only functional if "loop" is removed
-      vid.pause();
-      // to capture IE10
-      vidFade();
+    vid.addEventListener('ended', function() {
+      polina.classList.remove('hidden');
     });
 
     pauseButton.addEventListener("click", function() {
       vid.classList.toggle("stopfade");
       if (vid.paused) {
         vid.play();
-        pauseButton.innerHTML = "Pause";
+        pauseButton.innerHTML = '<i class="fa fa-pause"></i>';
       } else {
         vid.pause();
-        pauseButton.innerHTML = "Paused";
+        pauseButton.innerHTML = '<i class="fa fa-play"></i>';
       }
     });
 
     nextButton.addEventListener("click", function() {
       vid.parentNode.removeChild(vid);
       polina.parentNode.removeChild(polina);
+      skip.parentNode.removeChild(skip);
+      pauseButton.parentNode.removeChild(pauseButton);
+      setup();
+      animate();
+    });
+
+    skipButton.addEventListener("click", function() {
+      vid.parentNode.removeChild(vid);
+      polina.parentNode.removeChild(polina);
+      skip.parentNode.removeChild(skip);
+      pauseButton.parentNode.removeChild(pauseButton);
       setup();
       animate();
     });

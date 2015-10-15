@@ -69,7 +69,7 @@ a {
 h1 a {
   text-decoration: none;
 }
-#info-icon {
+#info-icon, #pause, #skip {
   position: absolute;
   left: 10px;
   bottom: 10px;
@@ -83,7 +83,14 @@ h1 a {
   font-family: monospace;
   font-size: 16px;
 }
-#info-icon:hover {
+#pause, #skip {
+  top: 10px;
+}
+#skip {
+  left: 50px;
+  width: 50px;
+}
+#info-icon:hover, #pause:hover, #skip:hover {
   cursor: pointer;
   background: rgba(0, 0, 0, 0.8);
 }

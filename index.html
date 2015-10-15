@@ -4,6 +4,7 @@
   <head>
     <link rel="stylesheet" type="text/css" href="css/reset.css">
     <link rel="stylesheet" type="text/css" href="css/feuille-de-style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <title>Three.js experimentation</title>
   </head>
 
@@ -12,9 +13,10 @@
       <!-- <source src="data/video.mp4" type="video/mp4"> -->
       <source src="data/video2.mp4" type="video/mp4">
     </video>
-    <div id='polina'>
+    <div id="pause"><i class="fa fa-pause"></i></div>
+    <div id="skip">Skip</div>
+    <div id='polina' class='hidden'>
       <button id='next'>Introduce me to the Oracle</button>
-      <button id='pause'>Pause</button>
     </div>
 
 
@@ -27,7 +29,6 @@
       <br>
     </div>
 
-    <script type="text/javascript" src="js/vendor/lazyload.js"></script>
     <script type="text/javascript" src="js/detect.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r72/three.min.js"></script>
     <script type="text/javascript" src="js/vendor/orbitControls.js"></script>
